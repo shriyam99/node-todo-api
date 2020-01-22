@@ -6,7 +6,7 @@ MongoClient.connect('mongodb://localhost:27017', (err, client)=>{
     console.log(res);
   });
   client.close();
-})
+});
 
 // MongoClient.connect('mongodb://localhost:27017', (err, client)=>{
 //   var db = client.db('TodoApp');
