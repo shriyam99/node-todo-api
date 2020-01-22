@@ -4,7 +4,7 @@ MongoClient.connect('mongodb://localhost:27017', (err, client)=>{
   var db = client.db('TodoApp');
   db.collection('Todos').findOneAndDelete({completed: false}).then((res)=>{
     console.log(res);
-  })
+  });
   client.close();
 })
 
