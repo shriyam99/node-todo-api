@@ -23,11 +23,24 @@
 //   client.close();
 // });
 
+// const {MongoClient, ObjectID} = require('mongodb');
+// MongoClient.connect('mongodb://localhost:27017', (err, client)=>{
+//   var db = client.db('TodoApp');
+//   db.collection('Users').find({age: 44}).count().then((count)=>{
+//     console.log(`Total count: ${count}`);
+//   }).catch((err)=>console.log(err));
+//   client.close();
+// })
+
 const {MongoClient, ObjectID} = require('mongodb');
 MongoClient.connect('mongodb://localhost:27017', (err, client)=>{
+  console.log(err);
   var db = client.db('TodoApp');
-  db.collection('Users').find({age: 44}).count().then((count)=>{
-    console.log(`Total count: ${count}`);
-  }).catch((err)=>console.log(err));
+  db.collection('Users').find().toArray().then((data)=>{
+    console.log(data);
+  }).catch((err)=>{
+    console.log(err);
+  });
   client.close();
-})
+}
+);
