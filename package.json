@@ -9,6 +9,7 @@
   "author": "Shriyam tripathi",
   "license": "ISC",
   "dependencies": {
-    "mongodb": "^3.5.1"
+    "mongodb": "^3.5.1",
+    "mongoose": "^5.8.9"
   }
 }
