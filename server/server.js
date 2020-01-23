@@ -14,9 +14,9 @@ app.post('/todos', (req, res)=>{
   console.log(req.body);
   var newtodo = new todo(req.body);
   newtodo.save().then((data)=>{
-    res.send(`Database updated with data: ${data}`);
+    res.send(data);
   }).catch((err)=>{
-    res.status(400).send(`Something went wrong: ${err}`);
+    res.status(400).send(err);
   })
 });
 
@@ -27,8 +27,19 @@ app.post('/users', (req, res)=>{
   }).catch((err)=>{
     res.send(`Error: ${err}`);
   });
+});
+
+app.get('/todos', (req, res)=>{
+  todo.find().then((data)=>{
+    console.log(data);
+    res.send(data);
+  }).catch((err)=>{
+    res.send(err);
+  })
 })
 
 app.listen(PORT, ()=>{
   console.log('App is started');
 })
+
+module.exports = {app};
