@@ -30,11 +30,10 @@ app.post('/users', (req, res)=>{
 });
 
 app.get('/todos', (req, res)=>{
-  todo.find().then((data)=>{
-    console.log(data);
-    res.send(data);
+  todo.find().then((todos)=>{
+    res.send({todos});
   }).catch((err)=>{
-    res.send(err);
+    res.status(400).send(err);
   })
 })
 
