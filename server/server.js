@@ -50,12 +50,12 @@ app.get('/todos/:id', (req, res)=>{
     });
   todo.findById(id).then((todos)=>{
     if(!todos)
-      res.status(400).send({
+      res.status(404).send({
         errorMessage: 'Data not found'
       });
     res.status(200).send({todos});
   }).catch((err)=>{
-    res.status(400).send({
+    res.status(404).send({
       errorMessage: 'Id incorrect'
     });
   })
