@@ -30,6 +30,18 @@ app.post('/users', (req, res)=>{
   });
 });
 
+app.get('/todos', (req, res)=>{
+  todo.find().then((todos)=>{
+    if(todos.length===0)
+      res.status(400).send({
+        errorMessage: 'Data not found'
+      });
+    res.status(200).send({todos});
+  }).catch((err)=>{
+    res.status(400).send(err);
+  })
+})
+
 app.get('/todos/:id', (req, res)=>{
   var id = req.params.id;
   if(!id || !ObjectID.isValid(id))
