@@ -1,5 +1,6 @@
 //contains all the code to run the server
 const express = require('express');
+const {ObjectID} = require('mongodb');
 var app = express();
 const bodyparser = require('body-parser');
 const PORT = process.env.PORT || 3000;
@@ -29,11 +30,22 @@ app.post('/users', (req, res)=>{
   });
 });
 
-app.get('/todos', (req, res)=>{
-  todo.find().then((todos)=>{
-    res.send({todos});
+app.get('/todos/:id', (req, res)=>{
+  var id = req.params.id;
+  if(!id || !ObjectID.isValid(id))
+    res.status(404).send({
+      errorMessage: 'Id incorrect'
+    });
+  todo.findById(id).then((todos)=>{
+    if(!todos)
+      res.status(400).send({
+        errorMessage: 'Data not found'
+      });
+    res.status(200).send({todos});
   }).catch((err)=>{
-    res.status(400).send(err);
+    res.status(400).send({
+      errorMessage: 'Id incorrect'
+    });
   })
 })
 
