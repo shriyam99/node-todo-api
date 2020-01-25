@@ -10,7 +10,9 @@ var loadTodoData =  [{
   text: 'first test case'
 }, {
   _id: new ObjectID(),
-  text: 'Second test case'
+  text: 'Second test case',
+  completed: true,
+  completedAt: 23423
 }];
 
 beforeEach((done)=>{                    //mocha function runs before testing application
@@ -130,6 +132,40 @@ describe('DELETE /todos/:id', ()=>{
     .expect(404)
     .expect((res)=>{
       expect(res.body.errorMessage).toBe('Data not found');
+    })
+    .end(done);
+  });
+});
+
+describe('PATCH /todos/:id', ()=>{
+  it('should update the todo', (done)=>{
+    request(app)
+    .patch(`/todos/${loadTodoData[0]._id}`)
+    .send({
+      text: 'test update1',
+      completed: true
+    })
+    .expect(200)
+    .expect((res)=>{
+      expect(res.body.todo.text).toBe('test update1');
+      expect(res.body.todo.completed).toBe(true);
+      expect(res.body.todo.completedAt).toBeA('number');
+    })
+    .end(done);
+  });
+
+  it('should clear compltedAt when todo is not completed', (done)=>{
+    request(app)
+    .patch(`/todos/${loadTodoData[1]._id}`)
+    .send({
+      text: 'test update2',
+      completed: false
+    })
+    .expect(200)
+    .expect((res)=>{
+      expect(res.body.todo.text).toBe('test update2');
+      expect(res.body.todo.completed).toBe(false);
+      expect(res.body.todo.completedAt).toNotExist();
     })
     .end(done);
   });
