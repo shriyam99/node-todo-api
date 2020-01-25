@@ -5,7 +5,6 @@ var user = mongoose.model('user', new mongoose.Schema({
     type: String,
     trim: true,
     required: true,
-    default: 'abc123@email.com'
   },
 }));
 
