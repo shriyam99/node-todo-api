@@ -4,8 +4,12 @@
   "description": "A dummy project on creating api",
   "main": "index.js",
   "scripts": {
+    "start": "node server/server.js",
     "test": "mocha **/*.tests.js",
     "test-watch": "nodemon --exec \"npm test\""
+  },
+  "enigines":{
+    "node": "10.16.0"
   },
   "author": "Shriyam tripathi",
   "license": "ISC",
