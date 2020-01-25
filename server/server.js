@@ -1,6 +1,7 @@
 //contains all the code to run the server
 const express = require('express');
 const {ObjectID} = require('mongodb');
+const _ = require('lodash');
 var app = express();
 const bodyparser = require('body-parser');
 const PORT = process.env.PORT || 3000;
@@ -86,6 +87,33 @@ app.delete('/todos/:id', (req, res)=>{
   }).catch((err)=>{
     res.status(400).send({
       errorMessage: 'Id incorrect'
+    })
+  })
+});
+
+app.patch('/todos/:id', (req, res)=>{
+  var id = req.params.id;
+  if(!id || !ObjectID.isValid(id))
+    res.status(404).send({
+      errorMessage: 'Id incorrect'
+    });
+  var body = _.pick(req.body, ['text', 'completed']);
+  if(_.isBoolean(body.completed) && body.completed){
+    body.completedAt = new Date().getTime();
+  }
+  else {
+    body.completed = false;
+    body.completedAt = null;
+  }
+  todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo)=>{
+    if(!todo)
+      res.status(400).send({
+        errorMessage: 'Something went wrong'
+      })
+    res.status(200).send({todo});
+  }).catch((err)=>{
+    res.status(400).send({
+      errorMessage: 'Something went wrong'
     })
   })
 });
