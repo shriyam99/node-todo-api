@@ -55,7 +55,7 @@ app.get('/todos', (req, res)=>{
 app.get('/todos/:id', (req, res)=>{
   var id = req.params.id;
   if(!id || !ObjectID.isValid(id))
-    res.status(404).send({
+    res.status(400).send({
       errorMessage: 'Id incorrect'
     });
   todo.findById(id).then((todos)=>{
@@ -65,11 +65,30 @@ app.get('/todos/:id', (req, res)=>{
       });
     res.status(200).send({todos});
   }).catch((err)=>{
-    res.status(404).send({
+    res.status(400).send({
       errorMessage: 'Id incorrect'
     });
   })
 })
+
+app.delete('/todos/:id', (req, res)=>{
+  var id = req.params.id;
+  if(!id || !ObjectID.isValid(id))
+    res.status(404).send({
+      errorMessage: 'Id incorrect'
+    });
+  todo.findByIdAndRemove(id).then((todo)=>{
+    if(!todo)
+      res.status(404).send({
+        errorMessage: 'Data not found'
+      });
+    res.status(200).send({todo});
+  }).catch((err)=>{
+    res.status(400).send({
+      errorMessage: 'Id incorrect'
+    })
+  })
+});
 
 app.listen(PORT, ()=>{
   console.log(`App is started on port: ${PORT}`);
