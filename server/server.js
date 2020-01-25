@@ -31,8 +31,8 @@ app.post('/users', (req, res)=>{
 });
 
 app.get('/users', (req, res)=>{
-  user.find().then((data)=>{
-    res.status(200).send(data);
+  user.find().then((users)=>{
+    res.status(200).send({users});
   }).catch((err)=>{
     res.status(404).send({
       errorMessage: 'Something went wrong'
