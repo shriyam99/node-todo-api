@@ -30,6 +30,16 @@ app.post('/users', (req, res)=>{
   });
 });
 
+app.get('/users', (req, res)=>{
+  user.find().then((data)=>{
+    res.status(200).send(data);
+  }).catch((err)=>{
+    res.status(404).send({
+      errorMessage: 'Something went wrong'
+    })
+  })
+})
+
 app.get('/todos', (req, res)=>{
   todo.find().then((todos)=>{
     if(todos.length===0)
