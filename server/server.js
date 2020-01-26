@@ -1,10 +1,12 @@
 //contains all the code to run the server
+require('./config/config');
+
 const express = require('express');
 const {ObjectID} = require('mongodb');
 const _ = require('lodash');
 var app = express();
 const bodyparser = require('body-parser');
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 
 const {mongoose}= require('./db/mongoose');
 const {todo} = require('./models/todos');
