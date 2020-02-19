@@ -25,11 +25,15 @@ app.post('/todos', (req, res)=>{
 });
 
 app.post('/users', (req, res)=>{
-  var newuser = new user(req.body);
-  newuser.save().then((data)=>{
-    res.send(`Data: ${data}`);
+  var body = _.pick(req.body, ['email', 'password']);
+  var newuser = new user(body);
+  newuser.save().then((user)=>{
+    res.status(200).send({user});
   }).catch((err)=>{
-    res.send(`Error: ${err}`);
+    res.status(400).send({
+      errorMessage: 'Something went wrong',
+      error: err
+    });
   });
 });
 
