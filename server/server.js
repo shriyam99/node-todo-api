@@ -11,6 +11,7 @@ const PORT = process.env.PORT;
 const {mongoose}= require('./db/mongoose');
 const {todo} = require('./models/todos');
 const {User} = require('./models/users');
+const {authenticate} = require('./middleware/authenticate');
 
 app.use(bodyparser.json());
 
@@ -38,6 +39,12 @@ app.post('/users', (req, res)=>{
     });
   });
 });
+
+
+
+app.get('/users/me', authenticate, (req, res)=>{
+  res.status(200).send(req.user);   //user will be verified by middleware
+})
 
 app.get('/users', (req, res)=>{
   user.find().then((users)=>{

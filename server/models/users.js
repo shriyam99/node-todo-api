@@ -32,6 +32,25 @@ var UserSchema = mongoose.Schema({
   }]
 });
 
+UserSchema.statics.findByToken = function (token) {
+  if(!token){
+    return Promise.reject('Access token not provided');
+  }
+  var User = this;    //returns model in this case
+  var decoded;
+  try{
+    decoded = jwt.verify(token, 'saitama');
+  } catch (err) {
+    return Promise.reject('Unauthorized access');
+    console.log(err);
+  }
+  return User.findOne({
+    '_id': decoded._id,
+    'tokens.token': token,
+    'tokens.access': 'auth'
+  });
+}
+
 UserSchema.methods.toJSON = function () {
   var user = this;
   var userObject = user.toObject(); //convert the user to have only props which we saved
