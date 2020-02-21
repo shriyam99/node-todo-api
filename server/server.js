@@ -10,7 +10,7 @@ const PORT = process.env.PORT;
 
 const {mongoose}= require('./db/mongoose');
 const {todo} = require('./models/todos');
-const {user} = require('./models/users');
+const {User} = require('./models/users');
 
 app.use(bodyparser.json());
 
@@ -26,9 +26,11 @@ app.post('/todos', (req, res)=>{
 
 app.post('/users', (req, res)=>{
   var body = _.pick(req.body, ['email', 'password']);
-  var newuser = new user(body);
-  newuser.save().then((user)=>{
-    res.status(200).send({user});
+  var newuser = new User(body);
+  newuser.save().then(()=>{
+    return newuser.getAuthToken();
+  }).then((token)=>{
+    res.status(200).header('x-auth', token).send(newuser);
   }).catch((err)=>{
     res.status(400).send({
       errorMessage: 'Something went wrong',
