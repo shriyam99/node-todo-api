@@ -31,8 +31,6 @@ app.post('/users', (req, res)=>{
   });
 });
 
-
-
 app.get('/users/me', authenticate, (req, res)=>{
   res.status(200).send(req.user);   //user will be verified by middleware
 })
