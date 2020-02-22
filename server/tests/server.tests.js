@@ -4,22 +4,12 @@ const {ObjectID} = require('mongodb');
 
 const {app} = require('../server.js');
 const {todo} = require('../models/todos.js');
+const {User} = require('../models/users.js');
+const {loadTodoData, populateTodos, loadUserData, populateUsers} = require('./seed/seed.js');
 
-var loadTodoData =  [{
-  _id: new ObjectID(),
-  text: 'first test case'
-}, {
-  _id: new ObjectID(),
-  text: 'Second test case',
-  completed: true,
-  completedAt: 23423
-}];
 
-beforeEach((done)=>{                    //mocha function runs before testing application
-  todo.remove({}).then(()=>{
-    todo.insertMany(loadTodoData).then(()=>done());
-  });
-});
+beforeEach(populateTodos);
+beforeEach(populateUsers);
 
 describe('POST /todos', ()=>{
   it('should work as expected', (done)=>{
@@ -169,4 +159,76 @@ describe('PATCH /todos/:id', ()=>{
     })
     .end(done);
   });
+});
+
+describe('GET /users/me', ()=>{
+  it('should return user when authenticated', (done)=>{
+    request(app)
+    .get('/users/me')
+    .set('x-auth', loadUserData[0].tokens[0].token)
+    .expect(200)
+    .expect((res)=>{
+      expect(res.body._id).toBe(loadUserData[0]._id.toHexString());
+      expect(res.body.email).toBe(loadUserData[0].email);
+    })
+    .end(done);
+  });
+
+  it('should return 401 when not authenticated', (done)=>{
+    request(app)
+    .get('/users/me')
+    .expect(401)
+    .expect((res)=>{
+      expect(res.body.error).toBe('Access token not provided');
+    })
+    .end(done);
+  });
+});
+
+describe('POST /users', ()=>{
+  it('should create a user', (done)=>{
+    var email = 'sample321@gmail.com';
+    var password = 'userpass123';
+    request(app)
+    .post('/users')
+    .send({email, password})
+    .expect(200)
+    .expect((res)=>{
+      expect(res.headers['x-auth']).toExist();
+      expect(res.body._id).toExist();
+      expect(res.body.email).toBe(email);
+    })
+    .end((err)=>{
+      if(!err){
+        return done(err);
+      }
+      User.findOne({email}).then((user)=>{
+        expect(user).toExist();
+        expect(user.password).toNotBe(password);
+        done();
+      })
+    });
+  });
+
+  it('should return validation errors if user is invalid', (done)=>{
+    request(app)
+    .post('/users')
+    .send({
+      email: 'nfeofn',
+      password: 'abc123'
+    })
+    .expect(400)
+    .end(done);
+  });
+
+  it('should not create user if email is in use', (done)=>{
+    request(app)
+    .post('/users')
+    .send({
+      email: loadUserData[0].email,
+      password: 'abc123'
+    })
+    .expect(400)
+    .end(done);
+  })
 });
