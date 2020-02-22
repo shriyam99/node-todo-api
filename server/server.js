@@ -15,15 +15,6 @@ const {authenticate} = require('./middleware/authenticate');
 
 app.use(bodyparser.json());
 
-app.post('/todos', (req, res)=>{
-  console.log(req.body);
-  var newtodo = new todo(req.body);
-  newtodo.save().then((data)=>{
-    res.send(data);
-  }).catch((err)=>{
-    res.status(400).send(err);
-  })
-});
 
 app.post('/users', (req, res)=>{
   var body = _.pick(req.body, ['email', 'password']);
@@ -46,15 +37,29 @@ app.get('/users/me', authenticate, (req, res)=>{
   res.status(200).send(req.user);   //user will be verified by middleware
 })
 
-app.get('/users', (req, res)=>{
-  user.find().then((users)=>{
-    res.status(200).send({users});
+app.post('/users/login', (req, res)=>{
+  var body = _.pick(req.body, ['email', 'password']);
+  User.findByCredentials(body.email, body.password).then((user)=>{
+    return user.getAuthToken().then((token)=>{
+      res.status(200).header('x-auth', token).send(user);
+    });
   }).catch((err)=>{
-    res.status(404).send({
-      errorMessage: 'Something went wrong'
+    res.status(401).json({
+      errorMessage: 'Something went wrong',
+      err: err
     })
-  })
+  });
 })
+
+app.post('/todos', (req, res)=>{
+  console.log(req.body);
+  var newtodo = new todo(req.body);
+  newtodo.save().then((data)=>{
+    res.send(data);
+  }).catch((err)=>{
+    res.status(400).send(err);
+  })
+});
 
 app.get('/todos', (req, res)=>{
   todo.find().then((todos)=>{

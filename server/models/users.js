@@ -33,6 +33,29 @@ var UserSchema = mongoose.Schema({
   }]
 });
 
+UserSchema.statics.findByCredentials = function (email, password){
+  if(!email || !password){
+    return Promise.reject('Email or password not provided');
+  }
+  var User = this;
+  return User.findOne({email}).then((user)=>{
+    if(!user)
+      return Promise.reject('User not found');
+
+    return new Promise((resolve, reject)=>{
+      bcrypt.compare(password, user.password, (err, result)=>{
+        if(result){
+          resolve(user);
+        }
+        else{
+          reject('Invalid credentials');
+        }
+      });
+    })
+
+  }).catch((err)=>Promise.reject(err));
+}
+
 UserSchema.statics.findByToken = function (token) {
   if(!token){
     return Promise.reject('Access token not provided');
