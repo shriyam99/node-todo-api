@@ -2,17 +2,17 @@ const {SHA256} = require('crypto-js');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
-var password = 'herokusampleapp'
+// var password = 'herokusampleapp'
 // bcrypt.genSalt(11, (err, salt)=>{
 //   bcrypt.hash(password, salt, (err, hash)=>{
 //     console.log(hash);
 //   })
 // })
 
-var hashedpassword= '$2a$11$I/fmiDinIIMccGFNqYLf7eVxH.HlmNpVXVcIokpOm9zy8WpGoIlmC';
-bcrypt.compare(password, hashedpassword, (err, res)=>{
-  console.log(res);
-})
+// var hashedpassword= '$2a$11$I/fmiDinIIMccGFNqYLf7eVxH.HlmNpVXVcIokpOm9zy8WpGoIlmC';
+// bcrypt.compare(password, hashedpassword, (err, res)=>{
+//   console.log(res);
+// })
 // var data = {
 //   id: 4
 // };
@@ -50,3 +50,12 @@ bcrypt.compare(password, hashedpassword, (err, res)=>{
 // else {
 //   console.log("Data is altered");
 // }
+var data = {
+  id: 4
+};
+
+var token =jwt.sign(data, 'saitama');
+console.log(token);
+
+var res = jwt.verify(token, 'saitama');
+console.log(res);

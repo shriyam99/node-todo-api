@@ -33,7 +33,20 @@ app.post('/users', (req, res)=>{
 
 app.get('/users/me', authenticate, (req, res)=>{
   res.status(200).send(req.user);   //user will be verified by middleware
-})
+});
+
+app.delete('/users/me/token', authenticate, (req, res)=>{
+  req.user.deleteToken(req.token).then(()=>{
+    res.status(200).json({
+      msg: 'User logged out. Token got deleted!!'
+    });
+  }).catch((err)=>{
+    res.status(401).json({
+      err,
+      errorMessage: 'Something went wrong'
+    })
+  })
+});
 
 app.post('/users/login', (req, res)=>{
   var body = _.pick(req.body, ['email', 'password']);

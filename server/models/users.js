@@ -91,6 +91,17 @@ UserSchema.methods.getAuthToken = function() {   //arrow function not used to bi
   });
 }
 
+UserSchema.methods.deleteToken = function (token){
+  var user = this;
+  return user.update({    //this will delete whole item from the list tokens
+    $pull: {
+      tokens: {
+        token: token
+      }
+    }
+  });
+}
+
 UserSchema.pre('save', function (next){
   var user = this;
   if(user.isModified('password')){
