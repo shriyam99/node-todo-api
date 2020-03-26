@@ -62,9 +62,12 @@ app.post('/users/login', (req, res)=>{
   });
 })
 
-app.post('/todos', (req, res)=>{
+app.post('/todos', authenticate, (req, res)=>{
   console.log(req.body);
-  var newtodo = new todo(req.body);
+  var newtodo = new todo({
+    text: req.body.text,
+    _creator: req.user._id
+  });
   newtodo.save().then((data)=>{
     res.send(data);
   }).catch((err)=>{
@@ -72,8 +75,8 @@ app.post('/todos', (req, res)=>{
   })
 });
 
-app.get('/todos', (req, res)=>{
-  todo.find().then((todos)=>{
+app.get('/todos', authenticate, (req, res)=>{
+  todo.find({_creator: req.user._id}).then((todos)=>{
     if(todos.length===0)
       res.status(400).send({
         errorMessage: 'Data not found'
@@ -84,13 +87,16 @@ app.get('/todos', (req, res)=>{
   })
 })
 
-app.get('/todos/:id', (req, res)=>{
+app.get('/todos/:id', authenticate, (req, res)=>{
   var id = req.params.id;
   if(!id || !ObjectID.isValid(id))
     res.status(400).send({
       errorMessage: 'Id incorrect'
     });
-  todo.findById(id).then((todos)=>{
+  todo.findOne({
+    _id: id,
+    _creator: req.user._id
+  }).then((todos)=>{
     if(!todos)
       res.status(404).send({
         errorMessage: 'Data not found'
@@ -103,13 +109,16 @@ app.get('/todos/:id', (req, res)=>{
   })
 })
 
-app.delete('/todos/:id', (req, res)=>{
+app.delete('/todos/:id', authenticate, (req, res)=>{
   var id = req.params.id;
   if(!id || !ObjectID.isValid(id))
     res.status(404).send({
       errorMessage: 'Id incorrect'
     });
-  todo.findByIdAndRemove(id).then((todo)=>{
+  todo.findOneAndRemove({
+    _id: id,
+    _creator: req.user._id
+  }).then((todo)=>{
     if(!todo)
       res.status(404).send({
         errorMessage: 'Data not found'
@@ -122,7 +131,7 @@ app.delete('/todos/:id', (req, res)=>{
   })
 });
 
-app.patch('/todos/:id', (req, res)=>{
+app.patch('/todos/:id',authenticate, (req, res)=>{
   var id = req.params.id;
   if(!id || !ObjectID.isValid(id))
     res.status(404).send({
@@ -136,7 +145,7 @@ app.patch('/todos/:id', (req, res)=>{
     body.completed = false;
     body.completedAt = null;
   }
-  todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo)=>{
+  todo.findOneAndUpdate({_id: id, _creator: req.user._id}, {$set: body}, {new: true}).then((todo)=>{
     if(!todo)
       res.status(400).send({
         errorMessage: 'Something went wrong'

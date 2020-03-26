@@ -20,17 +20,23 @@ const loadUserData = [
     _id: usertwoid,
     email: 'anothersample123@gmail.com',
     password: 'user2pass',
+    tokens: [{
+      access: 'auth',
+      token: jwt.sign({_id: usertwoid, access: 'auth'}, 'saitama').toString()
+    }]
   }
 ];
 
 const loadTodoData =  [{
   _id: new ObjectID(),
-  text: 'first test case'
+  text: 'first test case',
+  _creator: useroneid
 }, {
   _id: new ObjectID(),
   text: 'Second test case',
   completed: true,
-  completedAt: 23423
+  completedAt: 23423,
+  _creator: usertwoid
 }];
 
 

@@ -14,6 +14,10 @@ var todo = mongoose.model('Todo', ({     //creating a model
   completedAt: {
     type: Number,
     default: null
+  },
+  _creator: {   //id of creator of this todo
+    type: mongoose.Schema.Types.ObjectID,
+    required: true
   }
 }));
 
