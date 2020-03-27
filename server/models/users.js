@@ -3,6 +3,7 @@ const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
 const bcrypt = require('bcryptjs');
+const secret = process.env.JWT_SECRET;
 
 var UserSchema = mongoose.Schema({
   email: {
@@ -63,7 +64,7 @@ UserSchema.statics.findByToken = function (token) {
   var User = this;    //returns model in this case
   var decoded;
   try{
-    decoded = jwt.verify(token, 'saitama');
+    decoded = jwt.verify(token, secret);
   } catch (err) {
     return Promise.reject('Unauthorized access');
     console.log(err);
@@ -84,7 +85,7 @@ UserSchema.methods.toJSON = function () {
 UserSchema.methods.getAuthToken = function() {   //arrow function not used to bind 'this'
   var user = this;
   var access = 'auth';
-  var token = jwt.sign({_id: user._id.toHexString(), access: access}, 'saitama').toString();
+  var token = jwt.sign({_id: user._id.toHexString(), access: access}, secret).toString();
   user.tokens.push({access, token});
   return user.save().then(()=>{     //returning a promise
     return token;   //this is valid bcoz we can access token from the .then() call again
